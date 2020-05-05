@@ -4,7 +4,30 @@ const router = express.Router()
 const Blog = require('../data/db')
 
 // POST    /api/posts              Creates a post using the information sent inside the `request body`.
-router.post('/', (req, res) => {})
+router.post('/', (req, res) => {
+    const newPost = req.body
+    if(!newPost.title || !newPost.contents){
+        res.status(400).json({
+            errorMessage: "Please provide title and contents for the post."
+        })
+    } else {
+        Blog.insert(newPost)
+        .then(success => {
+            console.log({success})
+                Blog.findById(success.id)
+                .then(otherSuccess => {
+                    res.status(201).json(otherSuccess)
+            
+        })
+        .catch(err => {
+            console.log({err})
+            res.status(500).json({
+                error: "There was an error while saving the post to the database."
+            })
+        })
+    })
+} //end of else
+}) //end of post
 
 //POST    /api/posts/:id/comments  Creates a comment for the post with the specified id using information sent inside of the `request body`.                                                                   
 router.post('/:id/comments', (req, res) => {})
