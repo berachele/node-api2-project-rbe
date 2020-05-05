@@ -10,7 +10,18 @@ router.post('/', (req, res) => {})
 router.post('/:id/comments', (req, res) => {})
 
 //GET     /api/posts               Returns an array of all the post objects contained in the database.                                                                                                         
-router.get('/', (req, res) => {})
+router.get('/', (req, res) => {
+    Blog.find()
+    .then(success => {
+        res.status(200).json(success)
+    })
+    .catch(err => {
+        console.log({err})
+        res.status(500).json({
+            message: "the post information could not be retrieved."
+        })
+    })
+})
 
 //GET     /api/posts/:id           Returns the post object with the specified id.                                                                                                                              
 router.get('/:id', (req, res) => {})
