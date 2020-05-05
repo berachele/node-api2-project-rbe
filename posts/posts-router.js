@@ -9,7 +9,7 @@ router.post('/', (req, res) => {})
 //POST    /api/posts/:id/comments  Creates a comment for the post with the specified id using information sent inside of the `request body`.                                                                   
 router.post('/:id/comments', (req, res) => {})
 
-//GET     /api/posts               Returns an array of all the post objects contained in the database.                                                                                                         
+//GET ✅     /api/posts               Returns an array of all the post objects contained in the database.                                                                                                         
 router.get('/', (req, res) => {
     Blog.find()
     .then(success => {
@@ -18,13 +18,31 @@ router.get('/', (req, res) => {
     .catch(err => {
         console.log({err})
         res.status(500).json({
-            message: "the post information could not be retrieved."
+            error: "The post information could not be retrieved."
         })
     })
 })
 
 //GET     /api/posts/:id           Returns the post object with the specified id.                                                                                                                              
-router.get('/:id', (req, res) => {})
+router.get('/:id', (req, res) => {
+    const id = req.params.id
+    Blog.findById(id)
+    .then(success => {
+        if(success){
+            res.status(200).json(success)
+        } else {
+            res.status(404).json({
+                message: "The post with the specified ID does not exist."
+            })
+        }
+    })
+    .catch(err => {
+        console.log({err})
+        res.status(500).json({
+            error: "The post information could not be retrieved."
+        })
+    })
+})
 
 //GET     /api/posts/:id/comments  Returns an array of all the comment objects associated with the post with the specified id.                                                                                 
 router.get('/:id/comments', (req, res) => {})
