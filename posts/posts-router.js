@@ -28,8 +28,52 @@ router.post('/', (req, res) => {
 } //end of else
 }) //end of post
 
-//POST    /api/posts/:id/comments  Creates a comment for the post with the specified id using information sent inside of the `request body`.                                                                   
-router.post('/:id/comments', (req, res) => {})
+//POST 🥳   /api/posts/:id/comments  Creates a comment for the post with the specified id using information sent inside of the `request body`.                                                                   
+router.post('/:id/comments', (req, res) => {
+    //first I need to findCommentById
+    const id = req.params.id
+    Blog.findCommentById(id)
+    .then(success => {
+        //then I can insertComment
+        if(success){
+            if(!req.body.text){
+                res.status(400).json({
+                    errorMessage: "Please provide text for the comment."
+                })
+            } else {
+            console.log({success})
+            Blog.insertComment(req.body)
+            .then(otherSuccess => {
+                if(otherSuccess){
+                    Blog.findCommentById(otherSuccess.id)
+                    .then(thirdSuccess => {
+                        res.status(201).json(thirdSuccess)
+                    })
+                    
+                }else {
+                    console.log("Try Again..")
+                }
+            })//end of .then 2
+            .catch(err => {
+                console.log({err})
+                res.status(500).json({
+                    error: "There was an error while saving the comment to the database"
+                })
+            })//end of .catch 2
+            } //end of if/else 2 else
+        }else {
+            res.status(404).json({
+                message: "The post with the specified ID does not exist."
+            })
+        }//end of if/else 1 else
+    })//end of .then 1
+    .catch(err => {
+        console.log({err})
+        res.status(500).json({
+            error: "There was an error while saving the comment to the database"
+        })
+    })//end of .catch 1
+})//end of POST
 
 //GET 🥳     /api/posts               Returns an array of all the post objects contained in the database.                                                                                                         
 router.get('/', (req, res) => {
