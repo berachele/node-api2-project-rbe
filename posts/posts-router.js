@@ -3,7 +3,7 @@ const router = express.Router()
 
 const Blog = require('../data/db')
 
-// POST    /api/posts              Creates a post using the information sent inside the `request body`.
+// POST 🥳   /api/posts              Creates a post using the information sent inside the `request body`.
 router.post('/', (req, res) => {
     const newPost = req.body
     if(!newPost.title || !newPost.contents){
@@ -92,8 +92,31 @@ router.get('/:id/comments', (req, res) => {
 //You may need to make additional calls to the database in order to satisfy this requirement. 
 router.delete('/:id', (req, res) => {})
 
-//PUT     /api/posts/:id           Updates the post with the specified id using data from the request body. Returns the modified document, NOT the original.
-router.put('/:id', (req, res) => {})
+//PUT 🥳    /api/posts/:id           Updates the post with the specified id using data from the request body. Returns the modified document, NOT the original.
+router.put('/:id', (req, res) => {
+    const id = req.params.id
+    if(!req.body.title || !req.body.contents){
+        res.status(400).json({
+            errorMessage: "Please provide title and contents for the post."
+        })
+    }
+    Blog.update(id, req.body)
+    .then(success => {
+        if(success === 1){
+            res.status(200).json(req.body)
+        } else{
+            res.status(404).json({
+                message: "The post with the specified ID does not exist."
+            })
+        }
+    })
+    .catch(err => {
+        console.log({err})
+        res.status(500).json({
+            error: "The post information could not be modified."
+        })
+    })
+})
 
 
 module.exports = router
