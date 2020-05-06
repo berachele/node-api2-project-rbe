@@ -13,7 +13,6 @@ router.post('/', (req, res) => {
     } else {
         Blog.insert(newPost)
         .then(success => {
-            console.log({success})
                 Blog.findById(success.id)
                 .then(otherSuccess => {
                     res.status(201).json(otherSuccess)
@@ -88,9 +87,30 @@ router.get('/:id/comments', (req, res) => {
     })
 })
 
-//DELETE  /api/posts/:id           Removes the post with the specified id and returns the **deleted post object**. 
+//DELETE 🥳 /api/posts/:id           Removes the post with the specified id and returns the **deleted post object**. 
 //You may need to make additional calls to the database in order to satisfy this requirement. 
-router.delete('/:id', (req, res) => {})
+router.delete('/:id', (req, res) => {
+    const id = req.params.id
+    Blog.remove(id)
+    .then(success => {
+        if(success === 1){
+            Blog.find()
+            .then(otherSuccess => {
+                res.status(200).json(otherSuccess)
+            })
+        }else {
+            res.status(404).json({
+                message: "The post with the specified ID does not exist."
+            })
+        }
+    })
+    .catch(err => {
+        console.log({err})
+        res.status(500).json({
+            error: "The post could not be removed."
+        })
+    })
+})
 
 //PUT 🥳    /api/posts/:id           Updates the post with the specified id using data from the request body. Returns the modified document, NOT the original.
 router.put('/:id', (req, res) => {
